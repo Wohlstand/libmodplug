@@ -21,6 +21,8 @@
 # include <stdint.h>
 #endif
 
+#define MMCMP_SUPPORT
+
 /* disable AGC and FILESAVE for all targets for uniformity. */
 #define NO_AGC
 #define MODPLUG_NO_FILESAVE

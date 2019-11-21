@@ -9,8 +9,6 @@
 #include "libmodplug/stdafx.h"
 #include "libmodplug/sndfile.h"
 
-#define MMCMP_SUPPORT
-
 #ifdef MMCMP_SUPPORT
 extern BOOL MMCMP_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength);
 #endif
