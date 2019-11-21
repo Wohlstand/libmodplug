@@ -638,7 +638,9 @@ public:
 	BOOL ReadIT(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL Read669(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadUlt(LPCBYTE lpStream, DWORD dwMemLength);
+#ifndef NO_WAVFORMAT
 	BOOL ReadWav(LPCBYTE lpStream, DWORD dwMemLength);
+#endif
 	BOOL ReadDSM(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadFAR(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadAMS(LPCBYTE lpStream, DWORD dwMemLength);
@@ -653,12 +655,14 @@ public:
 	BOOL ReadPSM(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadJ2B(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadUMX(LPCBYTE lpStream, DWORD dwMemLength);
+#ifndef NO_MIDIFORMATS
 	BOOL ReadABC(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL TestABC(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadMID(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL TestMID(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadPAT(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL TestPAT(LPCBYTE lpStream, DWORD dwMemLength);
+#endif
 	// Save Functions
 #ifndef MODPLUG_NO_FILESAVE
 	UINT WriteSample(FILE *f, MODINSTRUMENT *pins, UINT nFlags, UINT nMaxLen=0);

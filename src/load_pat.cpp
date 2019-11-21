@@ -44,6 +44,8 @@
 #include "stdafx.h"
 #include "sndfile.h"
 
+#ifndef NO_MIDIFORMATS
+
 #include "load_pat.h"
 
 #ifdef MSC_VER
@@ -1259,3 +1261,4 @@ BOOL CSoundFile::ReadPAT(const BYTE *lpStream, DWORD dwMemLength)
 	PAT_Cleanup(h);	// we dont need it anymore
 	return 1;
 }
+#endif // NO_MIDIFORMATS
