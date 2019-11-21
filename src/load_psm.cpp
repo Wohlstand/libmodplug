@@ -84,15 +84,15 @@ typedef struct _PSMSAMPLE
 	BYTE reserved6[19];
 } PSMSAMPLE;
 
-void swap_PSMSAMPLE(PSMSAMPLE* p){
+#pragma pack()
+
+static void swap_PSMSAMPLE(PSMSAMPLE* p){
 	p->smpid = bswapLE32(p->smpid);
 	p->length = bswapLE32(p->length);
 	p->loopstart = bswapLE32(p->loopstart);
 	p->loopend = bswapLE32(p->loopend);
 	p->samplerate = bswapLE32(p->samplerate);
 }
-
-#pragma pack()
 
 
 BOOL CSoundFile::ReadPSM(LPCBYTE lpStream, DWORD dwMemLength)
