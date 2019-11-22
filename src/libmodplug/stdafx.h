@@ -22,8 +22,8 @@
 #endif
 
 /*#define CXX_INTERFACE*/ /* export C++ interface from dll. */
-#define MIDIFMT_SUPPORT
-#define WAV_SUPPORT
+/*#define MIDIFMT_SUPPORT*/
+/*#define WAV_SUPPORT*/
 /*#define MMCMP_SUPPORT*/
 
 /* disable AGC and FILESAVE for all targets for uniformity. */
