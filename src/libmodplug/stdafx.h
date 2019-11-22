@@ -22,7 +22,7 @@
 #endif
 
 /*#define CXX_INTERFACE*/ /* export C++ interface from dll. */
-#define MMCMP_SUPPORT
+/*#define MMCMP_SUPPORT*/
 
 /* disable AGC and FILESAVE for all targets for uniformity. */
 #define NO_AGC
