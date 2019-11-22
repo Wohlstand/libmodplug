@@ -22,13 +22,13 @@
 #endif
 
 /*#define CXX_INTERFACE*/ /* export C++ interface from dll. */
+#define MIDIFMT_SUPPORT
+#define WAV_SUPPORT
 /*#define MMCMP_SUPPORT*/
 
 /* disable AGC and FILESAVE for all targets for uniformity. */
 #define NO_AGC
 /*#define NO_FILTER */
-/*#define NO_MIDIFORMATS*/
-/*#define NO_WAVFORMAT*/
 
 #ifdef _WIN32
 
