@@ -395,7 +395,7 @@ static void abc_dumptracks(ABCHANDLE *h, const char *p)
 	}
 }
 
-#if defined(WIN32) && defined(_mm_free)
+#if defined(_WIN32) && defined(_mm_free)
 #undef _mm_free
 #endif
 
