@@ -37,7 +37,7 @@ include (TestBigEndian)
 
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 if(WORDS_BIGENDIAN)
-  add_definitions(-DWORDS_BIGENDIAN)
+  add_definitions(-DWORDS_BIGENDIAN=1)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
