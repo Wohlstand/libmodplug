@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.0)
 
 project(libmodplug)
 
+set(VERSION "0.8.9.0")
+
 option(BUILD_SHARED_LIBS "Build Shared Library (DLL)" OFF)
 option(EXPORT_CXX "Export C++ interface from library" ON)
 option(MIDIFMT_SUPPORT "Enable midi formats support" OFF)
@@ -41,26 +43,31 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   add_definitions(-Wall)
   # check symbol visibility attributes
+  set(OLD_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
   if(NOT WIN32 AND NOT CYGWIN)
-    set(OLD_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
     set(CMAKE_REQUIRED_FLAGS "${OLD_REQUIRED_FLAGS} -Werror")
     check_c_source_compiles("int foo(void) __attribute__((visibility(\"default\")));
                              int main(void) {return 0;}" HAVE_VISIBILITY_DEFAULT)
     if(HAVE_VISIBILITY_DEFAULT)
       check_c_compiler_flag(-fvisibility=hidden HAVE_VISIBILITY_HIDDEN)
     endif()
-    set(CMAKE_REQUIRED_FLAGS "${OLD_REQUIRED_FLAGS}")
   endif()
+  set(CMAKE_REQUIRED_FLAGS "-Wl,--no-undefined")
+  check_c_compiler_flag("" HAVE_NO_UNDEFINED)
+  set(CMAKE_REQUIRED_FLAGS "${OLD_REQUIRED_FLAGS}")
 endif()
 
 include_directories(AFTER
   src
   src/libmodplug
   ${PROJECT_BINARY_DIR}
-  )
+)
 
-if (UNIX)
-  set (CMAKE_REQUIRED_LIBRARIES m)
+if(UNIX AND NOT APPLE)
+  find_library(MATH_LIB m)
+  if(MATH_LIB)
+    set(CMAKE_REQUIRED_LIBRARIES m)
+  endif()
 endif()
 
 if (WIN32)
@@ -74,13 +81,11 @@ if (HAVE_STDINT)
 endif()
 
 check_function_exists("sinf" HAVE_SINF)
-
-# Set the LIB_TYPE variable to STATIC
-set(LIB_TYPE STATIC)
+if(HAVE_SINF)
+  add_definitions(-DHAVE_SINF)
+endif()
 
 if (BUILD_SHARED_LIBS)
-  # User wants to build Dynamic Libraries,
-  # so change the LIB_TYPE variable to CMake keyword 'SHARED'
   set (LIB_TYPE SHARED)
   if (WIN32 OR CYGWIN)
     add_definitions(-DDLL_EXPORT)
@@ -88,9 +93,10 @@ if (BUILD_SHARED_LIBS)
     add_definitions(-fvisibility=hidden)
     add_definitions("-DSYM_VISIBILITY")
   endif()
-else (BUILD_SHARED_LIBS)
+else ()
+  set(LIB_TYPE STATIC)
   add_definitions(-DMODPLUG_STATIC)
-endif (BUILD_SHARED_LIBS)
+endif()
 
 add_library(modplug ${LIB_TYPE}
   src/libmodplug/it_defs.h
@@ -138,6 +144,14 @@ add_library(modplug ${LIB_TYPE}
 if (BUILD_SHARED_LIBS)
   set_target_properties(modplug PROPERTIES
     VERSION 1.0.0 SOVERSION 1)
+  if(MATH_LIB)
+    target_link_libraries(modplug m)
+  endif()
+  if(APPLE)
+    target_link_libraries(modplug -Wl,-undefined,error)
+  elseif(HAVE_NO_UNDEFINED)
+    target_link_libraries(modplug -Wl,--no-undefined)
+  endif()
 endif()
 
 # install the library:
@@ -151,12 +165,6 @@ install(FILES
   DESTINATION
   include/libmodplug
   )
-
-set(VERSION "0.8.9.0")
-
-if(HAVE_SINF)
-  add_definitions(-DHAVE_SINF)
-endif(HAVE_SINF)
 
 if (NOT WIN32)
   set(prefix "${CMAKE_INSTALL_PREFIX}")
