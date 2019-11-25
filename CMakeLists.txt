@@ -139,18 +139,22 @@ add_library(modplug ${LIB_TYPE}
   src/sndfile.cpp
   src/sndmix.cpp
   src/tables.h
-  )
+)
 
 if (BUILD_SHARED_LIBS)
-  set_target_properties(modplug PROPERTIES
-    VERSION 1.0.0 SOVERSION 1)
-  if(MATH_LIB)
-    target_link_libraries(modplug m)
-  endif()
   if(APPLE)
     target_link_libraries(modplug -Wl,-undefined,error)
-  elseif(HAVE_NO_UNDEFINED)
-    target_link_libraries(modplug -Wl,--no-undefined)
+    target_link_libraries(modplug -Wl,-compatibility_version,2.0.0)
+    target_link_libraries(modplug -Wl,-current_version,2.0.0)
+  else()
+    if(HAVE_NO_UNDEFINED)
+      target_link_libraries(modplug -Wl,--no-undefined)
+    endif()
+    set_target_properties(modplug PROPERTIES
+                                  VERSION 1.0.0 SOVERSION 1)
+  endif()
+  if(MATH_LIB)
+    target_link_libraries(modplug m)
   endif()
 endif()
 
@@ -164,7 +168,7 @@ install(FILES
 
   DESTINATION
   include/libmodplug
-  )
+)
 
 if (NOT WIN32)
   set(prefix "${CMAKE_INSTALL_PREFIX}")
