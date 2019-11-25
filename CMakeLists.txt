@@ -147,7 +147,7 @@ install(FILES
   include/libmodplug
   )
 
-set(VERSION "0.8.8.5")
+set(VERSION "0.8.9.0")
 
 if(HAVE_SINF)
   add_definitions(-DHAVE_SINF)
