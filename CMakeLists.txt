@@ -135,6 +135,11 @@ add_library(modplug ${LIB_TYPE}
   src/tables.h
   )
 
+if (BUILD_SHARED_LIBS)
+  set_target_properties(modplug PROPERTIES
+    VERSION 1.0.0 SOVERSION 1)
+endif()
+
 # install the library:
 install(TARGETS modplug DESTINATION lib)
 
