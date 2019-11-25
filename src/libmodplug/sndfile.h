@@ -623,9 +623,7 @@ public:
 	BOOL ReadIT(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL Read669(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadUlt(LPCBYTE lpStream, DWORD dwMemLength);
-#ifdef WAV_SUPPORT
 	BOOL ReadWav(LPCBYTE lpStream, DWORD dwMemLength);
-#endif
 	BOOL ReadDSM(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadFAR(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadAMS(LPCBYTE lpStream, DWORD dwMemLength);
@@ -639,14 +637,12 @@ public:
 	BOOL ReadMT2(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadPSM(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadUMX(LPCBYTE lpStream, DWORD dwMemLength);
-#ifdef MIDIFMT_SUPPORT
 	BOOL ReadABC(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL TestABC(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadMID(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL TestMID(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL ReadPAT(LPCBYTE lpStream, DWORD dwMemLength);
 	BOOL TestPAT(LPCBYTE lpStream, DWORD dwMemLength);
-#endif
 	// Save Functions
 	// MOD Convert function
 	void ConvertModCommand(MODCOMMAND *) const;

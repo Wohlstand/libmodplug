@@ -1,7 +1,30 @@
 cmake_minimum_required(VERSION 2.8.0)
 
 project(libmodplug)
+
+option(EXPORT_CXX "Export C++ interface from library" ON)
+option(MIDIFMT_SUPPORT "Enable midi formats support" OFF)
+option(WAV_SUPPORT "Enable wav formats support" OFF)
+option(MMCMP_SUPPORT "Enable mmcmp and pp20 decompression support" OFF)
+
 add_definitions(-DMODPLUG_BUILD)
+if(MIDIFMT_SUPPORT)
+  add_definitions(-DMIDIFMT_SUPPORT)
+endif()
+if(WAV_SUPPORT)
+  add_definitions(-DWAV_SUPPORT)
+endif()
+if(MMCMP_SUPPORT)
+  add_definitions(-DMMCMP_SUPPORT)
+endif()
+if(NOT EXPORT_CXX)
+ add_definitions(-DNO_CXX_EXPORTS)
+else()
+  set(HEADERS_CXX
+      src/libmodplug/it_defs.h
+      src/libmodplug/sndfile.h
+      src/libmodplug/stdafx.h)
+endif()
 
 include (CheckFunctionExists)
 include (CheckIncludeFile)
@@ -119,12 +142,10 @@ add_library(modplug ${LIB_TYPE}
 # install the library:
 install(TARGETS modplug DESTINATION lib)
 
-# incstall the headers:
+# install the headers:
 install(FILES
-  src/libmodplug/it_defs.h
-  src/libmodplug/sndfile.h
-  src/libmodplug/stdafx.h
   src/modplug.h
+  ${HEADERS_CXX}
 
   DESTINATION
   include/libmodplug
