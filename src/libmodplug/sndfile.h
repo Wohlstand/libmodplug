@@ -417,6 +417,7 @@ typedef struct _MODCHANNEL
 	BYTE nRowNote, nRowInstr;
 	BYTE nRowVolCmd, nRowVolume;
 	BYTE nRowCommand, nRowParam;
+	BYTE nLeftVU, nRightVU; /* NOT USED! */
 	BYTE nActiveMacro, nPadding;
 } MODCHANNEL;
 
