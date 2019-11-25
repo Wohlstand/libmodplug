@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.0)
 
 project(libmodplug)
 
+option(BUILD_SHARED_LIBS "Build Shared Library (DLL)" OFF)
 option(EXPORT_CXX "Export C++ interface from library" ON)
 option(MIDIFMT_SUPPORT "Enable midi formats support" OFF)
 option(WAV_SUPPORT "Enable wav formats support" OFF)
@@ -18,7 +19,7 @@ if(MMCMP_SUPPORT)
   add_definitions(-DMMCMP_SUPPORT)
 endif()
 if(NOT EXPORT_CXX)
- add_definitions(-DNO_CXX_EXPORTS)
+  add_definitions(-DNO_CXX_EXPORTS)
 else()
   set(HEADERS_CXX
       src/libmodplug/it_defs.h
@@ -28,6 +29,29 @@ endif()
 
 include (CheckFunctionExists)
 include (CheckIncludeFile)
+include (CheckCCompilerFlag)
+include (CheckCSourceCompiles)
+include (TestBigEndian)
+
+TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
+if(WORDS_BIGENDIAN)
+  add_definitions(-DWORDS_BIGENDIAN)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+  add_definitions(-Wall)
+  # check symbol visibility attributes
+  if(NOT WIN32 AND NOT CYGWIN)
+    set(OLD_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
+    set(CMAKE_REQUIRED_FLAGS "${OLD_REQUIRED_FLAGS} -Werror")
+    check_c_source_compiles("int foo(void) __attribute__((visibility(\"default\")));
+                             int main(void) {return 0;}" HAVE_VISIBILITY_DEFAULT)
+    if(HAVE_VISIBILITY_DEFAULT)
+      check_c_compiler_flag(-fvisibility=hidden HAVE_VISIBILITY_HIDDEN)
+    endif()
+    set(CMAKE_REQUIRED_FLAGS "${OLD_REQUIRED_FLAGS}")
+  endif()
+endif()
 
 include_directories(AFTER
   src
@@ -44,45 +68,12 @@ if (WIN32)
   add_definitions(-DNOMINMAX)
 endif()
 
-if (WIN32 AND NOT (MINGW OR MSYS))
-  set(MSINTTYPES_PATH "$ENV{MSINTTYPES_PATH}" CACHE PATH "search path for inttypes.h and stdint.h")
-
-  find_path(STDINT_INCLUDE_DIR
-    stdint.h
-    PATHS
-    ${MSINTTYPES_PATH})
-
-  if (STDINT_INCLUDE_DIR)
-    add_definitions(-DHAVE_STDINT_H)
-    include_directories(AFTER "${STDINT_INCLUDE_DIR}")
-  endif()
-
-  find_path(INTTYPES_INCLUDE_DIR
-    inttypes.h
-    PATHS
-    ${MSINTTYPES_PATH})
-
-  if (INTTYPES_INCLUDE_DIR)
-    add_definitions(-DHAVE_INTTYPES_H)
-    include_directories(AFTER "${INTTYPES_INCLUDE_DIR}")
-  endif()
-
-  if (NOT STDINT_INCLUDE_DIR OR NOT INTTYPES_INCLUDE_DIR)
-    message(WARNING
-      "Compilation may fail if inttypes.h is not natively supported by the compiler."
-      "You can get inttypes.h from http://code.google.com/p/msinttypes/")
-  endif()
-else()
-  check_include_file("stdint.h" HAVE_STDINT)
-  if (HAVE_STDINT)
-    add_definitions(-DHAVE_STDINT_H)
-  endif()
+check_include_file("stdint.h" HAVE_STDINT)
+if (HAVE_STDINT)
+  add_definitions(-DHAVE_STDINT_H)
 endif()
 
 check_function_exists("sinf" HAVE_SINF)
-
-# Allow the developer to select if Dynamic or Static libraries are built
-option(BUILD_SHARED_LIBS "Build Shared Library (DLL)" OFF)
 
 # Set the LIB_TYPE variable to STATIC
 set(LIB_TYPE STATIC)
@@ -91,7 +82,12 @@ if (BUILD_SHARED_LIBS)
   # User wants to build Dynamic Libraries,
   # so change the LIB_TYPE variable to CMake keyword 'SHARED'
   set (LIB_TYPE SHARED)
-  add_definitions(-DDLL_EXPORT)
+  if (WIN32 OR CYGWIN)
+    add_definitions(-DDLL_EXPORT)
+  elseif (HAVE_VISIBILITY_HIDDEN)
+    add_definitions(-fvisibility=hidden)
+    add_definitions("-DSYM_VISIBILITY")
+  endif()
 else (BUILD_SHARED_LIBS)
   add_definitions(-DMODPLUG_STATIC)
 endif (BUILD_SHARED_LIBS)
